@@ -1,0 +1,13 @@
+#frontend----- path lms-frontend ---->terminal
+npm start
+
+#env---
+cd "C:\Users\MSI BRAVO 15\Desktop\lms project"
+.venv\Scripts\activate
+
+
+
+
+#backend
+cd "C:\Users\MSI BRAVO 15\Desktop\lms project\lms project\backend"
+python manage.py runserver
