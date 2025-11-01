@@ -1746,37 +1746,15 @@ def lecturer_dashboard_data(request):
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def lecturer_courses(request):
     """Get courses taught by the lecturer"""
     try:
-        # Get user from session or token
-        user = None
-        user_id = request.session.get('user_id')
-        
-        if user_id:
-            try:
-                user = User.objects.get(id=user_id)
-            except User.DoesNotExist:
-                pass
-        
-        # Fallback to token authentication
-        if not user:
-            auth_header = request.headers.get('Authorization', '')
-            if auth_header.startswith('Token '):
-                token_key = auth_header.split(' ')[1]
-                try:
-                    token = Token.objects.get(key=token_key)
-                    user = token.user
-                except Token.DoesNotExist:
-                    return Response({"error": "Invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
-        
-        if not user:
-            return Response({"error": "Authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
+        user = request.user
         
         # Check if user is a lecturer
         try:
-            profile = user.profile
-            if profile.role != 'lecturer':
+            if not hasattr(user, 'profile') or user.profile.role != 'lecturer':
                 return Response({"error": "Lecturer access required"}, status=status.HTTP_403_FORBIDDEN)
         except Profile.DoesNotExist:
             return Response({"error": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -1788,48 +1766,9 @@ def lecturer_courses(request):
             return Response({"error": "Lecturer profile not found"}, status=status.HTTP_404_NOT_FOUND)
         
         # Get lecturer's courses with detailed information
-        courses = Course.objects.filter(lecturer=lecturer).select_related('lecturer__user')
-        courses_data = []
-        
-        for course in courses:
-            # Get enrollment count and student details
-            enrollments = Enrollment.objects.filter(course=course).select_related('student')
-            enrollment_count = enrollments.count()
-            
-            # Get assignment count
-            assignment_count = 0
-            modules = CourseModule.objects.filter(course=course)
-            for module in modules:
-                lessons = Lesson.objects.filter(module=module, lesson_type='assignment')
-                assignment_count += Assignment.objects.filter(lesson__in=lessons).count()
-            
-            # Get recent enrollments
-            recent_enrollments = enrollments.order_by('-enrolled_at')[:5]
-            recent_students = []
-            for enrollment in recent_enrollments:
-                recent_students.append({
-                    'id': enrollment.student.id,
-                    'username': enrollment.student.username,
-                    'first_name': enrollment.student.first_name,
-                    'last_name': enrollment.student.last_name,
-                    'enrolled_at': enrollment.enrolled_at.isoformat() if enrollment.enrolled_at else None
-                })
-            
-            courses_data.append({
-                'id': course.id,
-                'title': course.title,
-                'description': course.description,
-                'duration': course.duration,
-                'difficulty': course.difficulty,
-                'category': course.category,
-                'image': course.image,
-                'enrollment_count': enrollment_count,
-                'assignment_count': assignment_count,
-                'recent_students': recent_students,
-                'created_at': course.created_at.isoformat() if course.created_at else None
-            })
-        
-        return Response({'courses': courses_data})
+        courses = Course.objects.filter(lecturer=lecturer)
+        serializer = CourseSerializer(courses, many=True)
+        return Response(serializer.data)
         
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
