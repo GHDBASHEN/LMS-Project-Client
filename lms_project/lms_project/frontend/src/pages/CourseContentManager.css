@@ -1,0 +1,13 @@
+.course-content-manager .module-card {
+    background-color: #f8f9fa;
+}
+
+.course-content-manager .card-title {
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+.course-content-manager .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
