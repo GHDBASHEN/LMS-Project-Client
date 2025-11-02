@@ -42,7 +42,7 @@ class CourseSerializer(serializers.ModelSerializer):
                  'lecturer_info', 'modules_count', 'students_count', 'created_at', 'updated_at']
 
     def get_lecturer_info(self, obj):
-        if obj.lecturer and obj.lecturer.user:
+        if obj.lecturer and hasattr(obj.lecturer, 'user') and obj.lecturer.user:
             return {
                 'id': obj.lecturer.user.id,
                 'username': obj.lecturer.user.username,
@@ -54,7 +54,7 @@ class CourseSerializer(serializers.ModelSerializer):
         return obj.modules.count()
 
     def get_students_count(self, obj):
-        return obj.enrollments.filter(status='enrolled').count()
+        return obj.enrollment_set.filter(status='enrolled').count()
 
 class EnrollmentSerializer(serializers.ModelSerializer):
     course = CourseSerializer(read_only=True)

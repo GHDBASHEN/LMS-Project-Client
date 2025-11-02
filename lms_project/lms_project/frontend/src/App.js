@@ -66,7 +66,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
-import Navbar from './components/Navbar';  
+import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import '@fortawesome/fontawesome-free/css/all.min.css';
@@ -94,131 +94,156 @@ import OpenSourceDevelopment from "./courese/OpenSourceDevelopment";
 import ProgrammingLaboratory from "./pages/courses/ProgrammingLaboratory";
 import VisualComputingNew from "./pages/courses/VisualComputing";
 
+
+import LecturerAssignments from './pages/LecturerAssignments'; // Assuming you create this
+import CreateCourse from './pages/CreateCourse'; // Assuming you create this
+import PlagiarismChecker from './components/PlagiarismChecker'; // This file is in your components folder
+import CourseContentManager from './pages/CourseContentManager';
+
+
 function App() {
   return (
     <ErrorBoundary>
       <Router>
-        <Navbar /> 
-        <Chatbot/>
+        <Navbar />
+        <Chatbot />
         <Routes>
-        {/* old routes (keep as-is) */}
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} /> 
-        <Route path="/signup" element={<Signup />} /> 
-        <Route path="/profile" element={
-          <ProtectedRoute>
-            <Profile />
-          </ProtectedRoute>
-        } />
-        <Route path="/courses" element={<Courses />} />
-        <Route path="/course/:courseId" element={
-          <ProtectedRoute>
-            <CoursePage />
-          </ProtectedRoute>
-        } />
+          {/* old routes (keep as-is) */}
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          } />
+          <Route path="/courses" element={<Courses />} />
+          <Route path="/course/:courseId" element={
+            <ProtectedRoute>
+              <CoursePage />
+            </ProtectedRoute>
+          } />
 
-        {/* ✅ Industrial Dashboard - Main Dashboard */}
-        <Route 
-          path="/dashboard" 
-          element={
-            <ProtectedRoute>
-              <IndustrialDashboard />
-            </ProtectedRoute>
-          } 
-        />
+          {/* ✅ Industrial Dashboard - Main Dashboard */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <IndustrialDashboard />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* ✅ Legacy role-based dashboards */}
-        <Route 
-          path="/student-dashboard" 
-          element={<StudentDashboard />}
-        />
-        <Route 
-          path="/lecturer-dashboard" 
-          element={
-            <ProtectedRoute>
-              <LecturerDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route 
-          path="/admin-dashboard" 
-          element={<AdminDashboard />}
-        />
+          {/* ✅ Legacy role-based dashboards */}
+          <Route
+            path="/student-dashboard"
+            element={<StudentDashboard />}
+          />
+          <Route
+            path="/lecturer-dashboard"
+            element={
+              <ProtectedRoute>
+                <LecturerDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin-dashboard"
+            element={<AdminDashboard />}
+          />
 
-        {/* ✅ Course Pages Routes */}
-        <Route 
-          path="/course/programming-lab" 
-          element={
-            <ProtectedRoute>
-              <ProgrammingLab />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/course/visual-computing" 
-          element={
-            <ProtectedRoute>
-              <VisualComputing />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/course/electrical-engineering" 
-          element={
-            <ProtectedRoute>
-              <ElectricalEngineering />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/course/fundamentals-programming" 
-          element={
-            <ProtectedRoute>
-              <FundamentalsProgramming />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/course/open-source-development" 
-          element={
-            <ProtectedRoute>
-              <OpenSourceDevelopment />
-            </ProtectedRoute>
-          } 
-        />
 
-        {/* ✅ New Individual Course Pages */}
-        <Route 
-          path="/course/programming-laboratory" 
-          element={
-            <ProtectedRoute>
-              <ProgrammingLaboratory />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/course/visual-computing-new" 
-          element={
-            <ProtectedRoute>
-              <VisualComputingNew />
-            </ProtectedRoute>
-          } 
-        />
+          {/* --- Lecturer Dashboard Links --- */}
 
-        {/* ✅ Chatbot */}
-        <Route 
-          path="/chatbot" 
-          element={
-            <ProtectedRoute>
-              <Chatbot />
-            </ProtectedRoute>
-          } 
-        />
+          {/* 1. Assignments */}
+          <Route path="/lecturer/assignments" element={<ProtectedRoute role="lecturer"><LecturerAssignments /></ProtectedRoute>} />
 
-        {/* Fallback route */}
-        <Route path="*" element={<div>Page Not Found</div>} />
-      </Routes>
-    </Router>
+          {/* 2. Plagiarism Check */}
+          <Route path="/plagiarism-checker" element={<ProtectedRoute role="lecturer"><PlagiarismChecker /></ProtectedRoute>} />
+
+          {/* 3. Create New Course */}
+          <Route path="/create-course" element={<ProtectedRoute role="lecturer"><CreateCourse /></ProtectedRoute>} />
+
+          {/* 4. Course Card Manage Option (Parameter Route) */}
+          {/* This route handles navigating to a specific course's management page */}
+          <Route path="/lecturer/courses/:courseId/manage" element={<ProtectedRoute role="lecturer"><CourseContentManager /></ProtectedRoute>} />
+
+          {/* ... other existing routes like /lecturer/dashboard */}
+
+          {/* ✅ Course Pages Routes */}
+          <Route
+            path="/course/programming-lab"
+            element={
+              <ProtectedRoute>
+                <ProgrammingLab />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/course/visual-computing"
+            element={
+              <ProtectedRoute>
+                <VisualComputing />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/course/electrical-engineering"
+            element={
+              <ProtectedRoute>
+                <ElectricalEngineering />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/course/fundamentals-programming"
+            element={
+              <ProtectedRoute>
+                <FundamentalsProgramming />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/course/open-source-development"
+            element={
+              <ProtectedRoute>
+                <OpenSourceDevelopment />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* ✅ New Individual Course Pages */}
+          <Route
+            path="/course/programming-laboratory"
+            element={
+              <ProtectedRoute>
+                <ProgrammingLaboratory />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/course/visual-computing-new"
+            element={
+              <ProtectedRoute>
+                <VisualComputingNew />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* ✅ Chatbot */}
+          <Route
+            path="/chatbot"
+            element={
+              <ProtectedRoute>
+                <Chatbot />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Fallback route */}
+          <Route path="*" element={<div>Page Not Found</div>} />
+        </Routes>
+      </Router>
     </ErrorBoundary>
   );
 }
